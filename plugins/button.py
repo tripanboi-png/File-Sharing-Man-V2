@@ -91,4 +91,18 @@ async def fsub_button(client, message):
     if row:
         buttons.append(row)
 
+    try:
+
+        buttons.append(
+            [
+                InlineKeyboardButton(
+                    text="🔄 COBA LAGI",
+                    url=f"https://t.me/{client.username}?start={message.command[1]}"
+                )
+            ]
+        )
+
+    except:
+        pass
+
     return buttons
