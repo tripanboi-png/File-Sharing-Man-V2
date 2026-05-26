@@ -1,9 +1,8 @@
 from pyrogram import Client, filters
-from config import ADMINS
 from database.mongo import remove_admin
+from plugins.check_admin import is_admin
 
-
-@Client.on_message(filters.command("deladmin") & filters.user(ADMINS))
+@Client.on_message(filters.command("deladmin") & filters.create(is_admin))
 async def del_admin_command(client, message):
 
     if len(message.command) < 2:
