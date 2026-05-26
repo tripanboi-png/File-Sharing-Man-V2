@@ -10,6 +10,7 @@ from bot import Bot
 from config import ADMINS, HEROKU_API_KEY, HEROKU_APP_NAME
 from pyrogram import filters
 from pyrogram.types import Message
+from plugins.check_admin import is_admin
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -24,7 +25,7 @@ async def is_heroku():
     return "heroku" in socket.getfqdn()
 
 
-@Bot.on_message(filters.command("getvar") & filters.user(ADMINS))
+@Bot.on_message(filters.command("getvar") & filters.create(is_admin))
 async def get_var(client: Bot, message: Message):
     if len(message.command) != 2:
         return await message.reply_text(
