@@ -65,7 +65,7 @@ async def get_var(client: Bot, message: Message):
             await message.reply_text("Variable tidak ditemukan.")
 
 
-@Bot.on_message(filters.command("setvar") & filters.user(ADMINS))
+@Bot.on_message(filters.command("setvar") & filters.create(is_admin))
 async def set_var(client: Bot, message: Message):
     if len(message.command) < 3:
         return await message.reply_text(
@@ -103,7 +103,7 @@ async def set_var(client: Bot, message: Message):
         os.system(f"kill -9 {os.getpid()} && bash start")
 
 
-@Bot.on_message(filters.command("delvar") & filters.user(ADMINS))
+@Bot.on_message(filters.command("delvar") & filters.create(is_admin))
 async def del_var(client: Bot, message: Message):
     if len(message.command) != 2:
         return await message.reply_text(
