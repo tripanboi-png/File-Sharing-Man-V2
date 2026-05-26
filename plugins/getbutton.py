@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-from config import ADMINS
+from plugins.check_admin import is_admin
 from database.mongo import get_buttons
 
 
-@Client.on_message(filters.command("getbutton") & filters.user(ADMINS))
+@Client.on_message(filters.command("getbutton") & filters.create(is_admin))
 async def get_button_command(client, message):
 
     buttons = await get_buttons()
