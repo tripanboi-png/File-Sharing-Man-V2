@@ -1,10 +1,9 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from plugins.check_admin import is_admin
 
-from config import ADMINS
 
-
-@Client.on_message(filters.command("admin") & filters.user(ADMINS))
+@Client.on_message(filters.command("admin") & filters.create(is_admin))
 async def admin_menu(client, message):
 
     text = f"""
