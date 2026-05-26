@@ -6,11 +6,11 @@ from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from bot import Bot
-from config import ADMINS
+from plugins.check_admin import is_admin
 from helper_func import encode, get_message_id
 
 
-@Bot.on_message(filters.private & filters.user(ADMINS) & filters.command("batch"))
+@Bot.on_message(filters.private & filters.create(is_admin) & filters.command("batch"))
 async def batch(client: Client, message: Message):
     while True:
         try:
