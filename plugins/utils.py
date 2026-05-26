@@ -24,7 +24,7 @@ from config import (
 )
 from pyrogram import filters
 from pyrogram.types import Message
-
+from plugins.check_admin import is_admin
 
 @Bot.on_message(filters.command("logs") & filters.create(is_admin))
 async def get_bot_logs(client: Bot, m: Message):
