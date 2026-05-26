@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-from config import ADMINS
+from plugins.check_admin import is_admin
 from database.mongo import add_button
 
 
-@Client.on_message(filters.command("addbutton") & filters.user(ADMINS))
+@Client.on_message(filters.command("addbutton") & filters.create(is_admin)
 async def add_button_command(client, message):
 
     parts = message.text.split(maxsplit=2)
