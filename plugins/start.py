@@ -38,12 +38,14 @@ TIME_DURATION_UNITS = (
 
 
 async def _human_time_duration(seconds):
+
     if seconds == 0:
         return "inf"
 
     parts = []
 
     for unit, div in TIME_DURATION_UNITS:
+
         amount, seconds = divmod(int(seconds), div)
 
         if amount > 0:
@@ -65,6 +67,7 @@ async def start_command(client: Bot, message: Message):
 
     try:
         await add_user(id, user_name)
+
     except:
         pass
 
@@ -73,7 +76,13 @@ async def start_command(client: Bot, message: Message):
     if len(text) > 7:
 
         try:
+            await message.delete()
+        except:
+            pass
+
+        try:
             base64_string = text.split(" ", 1)[1]
+
         except BaseException:
             return
 
@@ -86,6 +95,7 @@ async def start_command(client: Bot, message: Message):
             try:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
+
             except BaseException:
                 return
 
@@ -93,11 +103,15 @@ async def start_command(client: Bot, message: Message):
                 ids = range(start, end + 1)
 
             else:
+
                 ids = []
+
                 i = start
 
                 while True:
+
                     ids.append(i)
+
                     i -= 1
 
                     if i < end:
@@ -107,16 +121,23 @@ async def start_command(client: Bot, message: Message):
 
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
+
             except BaseException:
                 return
 
-        temp_msg = await message.reply("<code>Tunggu Sebentar...</code>")
+        temp_msg = await message.reply(
+            "<code>Tunggu Sebentar...</code>"
+        )
 
         try:
             messages = await get_messages(client, ids)
 
         except BaseException:
-            await message.reply_text("<b>Telah Terjadi Error </b>🥺")
+
+            await message.reply_text(
+                "<b>Telah Terjadi Error </b>🥺"
+            )
+
             return
 
         await temp_msg.delete()
@@ -136,6 +157,7 @@ async def start_command(client: Bot, message: Message):
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
+
                 await msg.copy(
                     chat_id=message.from_user.id,
                     caption=caption,
@@ -212,7 +234,9 @@ async def get_users(client: Bot, message: Message):
 
     users = await full_userbase()
 
-    await msg.edit(f"{len(users)} <b>Pengguna menggunakan bot ini</b>")
+    await msg.edit(
+        f"{len(users)} <b>Pengguna menggunakan bot ini</b>"
+    )
 
 
 @Bot.on_message(filters.command("broadcast") & filters.user(ADMINS))
@@ -241,6 +265,7 @@ async def send_text(client: Bot, message: Message):
             if chat_id not in ADMINS:
 
                 try:
+
                     await broadcast_msg.copy(
                         chat_id,
                         protect_content=PROTECT_CONTENT
@@ -260,14 +285,19 @@ async def send_text(client: Bot, message: Message):
                     successful += 1
 
                 except UserIsBlocked:
+
                     await delete_user(chat_id)
+
                     blocked += 1
 
                 except InputUserDeactivated:
+
                     await delete_user(chat_id)
+
                     deleted += 1
 
                 except BaseException:
+
                     unsuccessful += 1
 
                 total += 1
