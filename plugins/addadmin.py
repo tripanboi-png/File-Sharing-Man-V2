@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-from config import ADMINS
+from plugins.check_admin import is_admin
 from database.mongo import add_admin
 
 
-@Client.on_message(filters.command("addadmin") & filters.user(ADMINS))
+@Client.on_message(filters.command("addadmin") & filters.create(is_admin))
 async def add_admin_command(client, message):
 
     if len(message.command) < 2:
@@ -12,9 +12,6 @@ async def add_admin_command(client, message):
         )
 
     user_id = int(message.command[1])
-
-    if user_id not in ADMINS:
-        ADMINS.append(user_id)
 
     await add_admin(user_id)
 
