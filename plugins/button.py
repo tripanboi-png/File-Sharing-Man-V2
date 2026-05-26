@@ -1,5 +1,4 @@
 from pyrogram.types import InlineKeyboardButton
-
 from database.mongo import get_buttons
 
 
@@ -13,16 +12,26 @@ async def start_button(client):
 
     for button in db_buttons:
 
-        row.append(
-            InlineKeyboardButton(
-                text=button["name"],
-                url=button["url"]
-            )
-        )
+        try:
 
-        if len(row) == 2:
-            buttons.append(row)
-            row = []
+            url = str(button["url"]).strip()
+
+            if not url.startswith("https://"):
+                continue
+
+            row.append(
+                InlineKeyboardButton(
+                    text=button["name"],
+                    url=url
+                )
+            )
+
+            if len(row) == 2:
+                buttons.append(row)
+                row = []
+
+        except:
+            continue
 
     if row:
         buttons.append(row)
@@ -58,16 +67,26 @@ async def fsub_button(client, message):
 
     for button in db_buttons:
 
-        row.append(
-            InlineKeyboardButton(
-                text=button["name"],
-                url=button["url"]
-            )
-        )
+        try:
 
-        if len(row) == 2:
-            buttons.append(row)
-            row = []
+            url = str(button["url"]).strip()
+
+            if not url.startswith("https://"):
+                continue
+
+            row.append(
+                InlineKeyboardButton(
+                    text=button["name"],
+                    url=url
+                )
+            )
+
+            if len(row) == 2:
+                buttons.append(row)
+                row = []
+
+        except:
+            continue
 
     if row:
         buttons.append(row)
