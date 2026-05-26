@@ -7,7 +7,7 @@ import heroku3
 import urllib3
 
 from bot import Bot
-from config import ADMINS, HEROKU_API_KEY, HEROKU_APP_NAME
+from config import HEROKU_API_KEY, HEROKU_APP_NAME
 from pyrogram import filters
 from pyrogram.types import Message
 from plugins.check_admin import is_admin
