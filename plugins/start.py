@@ -1,6 +1,5 @@
 # (©)Codexbotz
 # Recode by @mrismanaziz
-# t.me/SharingUserbot & t.me/Lunatic0de
 
 import asyncio
 from datetime import datetime
@@ -38,14 +37,12 @@ TIME_DURATION_UNITS = (
 
 
 async def _human_time_duration(seconds):
-
     if seconds == 0:
         return "inf"
 
     parts = []
 
     for unit, div in TIME_DURATION_UNITS:
-
         amount, seconds = divmod(int(seconds), div)
 
         if amount > 0:
@@ -57,6 +54,11 @@ async def _human_time_duration(seconds):
 @Bot.on_message(filters.command("start") & filters.private & subsall & subsch & subsgc)
 async def start_command(client: Bot, message: Message):
 
+    try:
+        await message.delete()
+    except:
+        pass
+
     id = message.from_user.id
 
     user_name = (
@@ -67,7 +69,6 @@ async def start_command(client: Bot, message: Message):
 
     try:
         await add_user(id, user_name)
-
     except:
         pass
 
@@ -76,13 +77,7 @@ async def start_command(client: Bot, message: Message):
     if len(text) > 7:
 
         try:
-            await message.delete()
-        except:
-            pass
-
-        try:
             base64_string = text.split(" ", 1)[1]
-
         except BaseException:
             return
 
@@ -95,7 +90,6 @@ async def start_command(client: Bot, message: Message):
             try:
                 start = int(int(argument[1]) / abs(client.db_channel.id))
                 end = int(int(argument[2]) / abs(client.db_channel.id))
-
             except BaseException:
                 return
 
@@ -103,15 +97,11 @@ async def start_command(client: Bot, message: Message):
                 ids = range(start, end + 1)
 
             else:
-
                 ids = []
-
                 i = start
 
                 while True:
-
                     ids.append(i)
-
                     i -= 1
 
                     if i < end:
@@ -121,23 +111,16 @@ async def start_command(client: Bot, message: Message):
 
             try:
                 ids = [int(int(argument[1]) / abs(client.db_channel.id))]
-
             except BaseException:
                 return
 
-        temp_msg = await message.reply(
-            "<code>Tunggu Sebentar...</code>"
-        )
+        temp_msg = await message.reply("<code>Tunggu Sebentar...</code>")
 
         try:
             messages = await get_messages(client, ids)
 
         except BaseException:
-
-            await message.reply_text(
-                "<b>Telah Terjadi Error </b>🥺"
-            )
-
+            await message.reply_text("<b>Telah Terjadi Error </b>🥺")
             return
 
         await temp_msg.delete()
@@ -157,7 +140,6 @@ async def start_command(client: Bot, message: Message):
             reply_markup = msg.reply_markup if DISABLE_CHANNEL_BUTTON else None
 
             try:
-
                 await msg.copy(
                     chat_id=message.from_user.id,
                     caption=caption,
@@ -208,7 +190,7 @@ async def not_joined(client: Bot, message: Message):
 
     buttons = await fsub_button(client, message)
 
-    await message.reply(
+    msg = await message.reply(
         text=FORCE_MSG.format(
             first=message.from_user.first_name,
             last=message.from_user.last_name,
@@ -223,6 +205,13 @@ async def not_joined(client: Bot, message: Message):
         disable_web_page_preview=True,
     )
 
+    await asyncio.sleep(15)
+
+    try:
+        await msg.delete()
+    except:
+        pass
+
 
 @Bot.on_message(filters.command(["users", "stats"]) & filters.user(ADMINS))
 async def get_users(client: Bot, message: Message):
@@ -234,9 +223,7 @@ async def get_users(client: Bot, message: Message):
 
     users = await full_userbase()
 
-    await msg.edit(
-        f"{len(users)} <b>Pengguna menggunakan bot ini</b>"
-    )
+    await msg.edit(f"{len(users)} <b>Pengguna menggunakan bot ini</b>")
 
 
 @Bot.on_message(filters.command("broadcast") & filters.user(ADMINS))
@@ -265,7 +252,6 @@ async def send_text(client: Bot, message: Message):
             if chat_id not in ADMINS:
 
                 try:
-
                     await broadcast_msg.copy(
                         chat_id,
                         protect_content=PROTECT_CONTENT
@@ -285,19 +271,14 @@ async def send_text(client: Bot, message: Message):
                     successful += 1
 
                 except UserIsBlocked:
-
                     await delete_user(chat_id)
-
                     blocked += 1
 
                 except InputUserDeactivated:
-
                     await delete_user(chat_id)
-
                     deleted += 1
 
                 except BaseException:
-
                     unsuccessful += 1
 
                 total += 1
@@ -320,41 +301,3 @@ Akun Terhapus: <code>{deleted}</code></b>"""
         await asyncio.sleep(8)
 
         await msg.delete()
-
-
-@Bot.on_message(filters.command("ping"))
-async def ping_pong(client, m: Message):
-
-    start = time()
-
-    current_time = datetime.utcnow()
-
-    uptime_sec = (current_time - START_TIME).total_seconds()
-
-    uptime = await _human_time_duration(int(uptime_sec))
-
-    m_reply = await m.reply_text("Pinging...")
-
-    delta_ping = time() - start
-
-    await m_reply.edit_text(
-        "<b>PONG!!</b>🏓 \n"
-        f"<b>• Pinger -</b> <code>{delta_ping * 1000:.3f}ms</code>\n"
-        f"<b>• Uptime -</b> <code>{uptime}</code>\n"
-    )
-
-
-@Bot.on_message(filters.command("uptime"))
-async def get_uptime(client, m: Message):
-
-    current_time = datetime.utcnow()
-
-    uptime_sec = (current_time - START_TIME).total_seconds()
-
-    uptime = await _human_time_duration(int(uptime_sec))
-
-    await m.reply_text(
-        "🤖 <b>Bot Status:</b>\n"
-        f"• <b>Uptime:</b> <code>{uptime}</code>\n"
-        f"• <b>Start Time:</b> <code>{START_TIME_ISO}</code>"
-    )
