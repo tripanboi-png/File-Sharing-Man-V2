@@ -34,34 +34,62 @@ from helper_func import encode
             "stats",
             "vars",
             "id",
+            "admin",
+            "addbutton",
+            "delbutton",
+            "getbutton",
+            "addadmin",
+            "deladmin",
+            "getadmin",
         ]
     )
 )
 async def channel_post(client: Client, message: Message):
-    reply_text = await message.reply_text("<code>Tunggu Sebentar...</code>", quote=True)
+
+    if message.text and message.text.startswith("/"):
+        return
+
+    reply_text = await message.reply_text(
+        "<code>Tunggu Sebentar...</code>",
+        quote=True
+    )
+
     try:
         post_message = await message.copy(
-            chat_id=client.db_channel.id, disable_notification=True
+            chat_id=client.db_channel.id,
+            disable_notification=True
         )
+
     except FloodWait as e:
         await asyncio.sleep(e.value)
+
         post_message = await message.copy(
-            chat_id=client.db_channel.id, disable_notification=True
+            chat_id=client.db_channel.id,
+            disable_notification=True
         )
+
     except Exception as e:
         LOGGER(__name__).warning(e)
-        await reply_text.edit_text("<b>Telah Terjadi Error...</b>")
+
+        await reply_text.edit_text(
+            "<b>Telah Terjadi Error...</b>"
+        )
         return
+
     converted_id = post_message.id * abs(client.db_channel.id)
+
     string = f"get-{converted_id}"
+
     base64_string = await encode(string)
+
     link = f"https://t.me/{client.username}?start={base64_string}"
 
     reply_markup = InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
-                    "🔁 Share Link", url=f"https://telegram.me/share/url?url={link}"
+                    "🔁 Share Link",
+                    url=f"https://telegram.me/share/url?url={link}"
                 )
             ]
         ]
@@ -74,11 +102,15 @@ async def channel_post(client: Client, message: Message):
     )
 
     if not DISABLE_CHANNEL_BUTTON:
+
         try:
             await post_message.edit_reply_markup(reply_markup)
+
         except FloodWait as e:
             await asyncio.sleep(e.value)
+
             await post_message.edit_reply_markup(reply_markup)
+
         except Exception:
             pass
 
@@ -90,22 +122,31 @@ async def new_post(client: Client, message: Message):
         return
 
     converted_id = message.id * abs(client.db_channel.id)
+
     string = f"get-{converted_id}"
+
     base64_string = await encode(string)
+
     link = f"https://t.me/{client.username}?start={base64_string}"
+
     reply_markup = InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
-                    "🔁 Share Link", url=f"https://telegram.me/share/url?url={link}"
+                    "🔁 Share Link",
+                    url=f"https://telegram.me/share/url?url={link}"
                 )
             ]
         ]
     )
+
     try:
         await message.edit_reply_markup(reply_markup)
+
     except FloodWait as e:
         await asyncio.sleep(e.value)
+
         await message.edit_reply_markup(reply_markup)
+
     except Exception:
         pass
