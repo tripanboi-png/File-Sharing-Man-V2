@@ -1,30 +1,25 @@
-import json
-
 from pyrogram import Client, filters
-
 from config import ADMINS
-
-BUTTON_FILE = "buttons.json"
-
-
-def load_buttons():
-    with open(BUTTON_FILE, "r") as f:
-        return json.load(f)
+from database.mongo import get_buttons
 
 
 @Client.on_message(filters.command("getbutton") & filters.user(ADMINS))
-async def get_button(client, message):
+async def get_button_command(client, message):
 
-    buttons = load_buttons()
+    buttons = await get_buttons()
 
     if not buttons:
         return await message.reply_text(
-            "Belum ada button."
+            "Tidak ada button."
         )
 
     text = "📋 LIST BUTTON\n\n"
 
-    for x in buttons:
-        text += f"• {x['name']}\n{x['link']}\n\n"
+    for button in buttons:
+
+        text += (
+            f"• {button['name']}\n"
+            f"{button['url']}\n\n"
+        )
 
     await message.reply_text(text)
