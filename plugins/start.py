@@ -7,13 +7,14 @@ from time import time
 
 from bot import Bot
 from config import (
-    ADMINS,
     CUSTOM_CAPTION,
     DISABLE_CHANNEL_BUTTON,
     FORCE_MSG,
     PROTECT_CONTENT,
     START_MSG,
 )
+
+from plugins.check_admin import is_admin
 
 from database.sql import add_user, delete_user, full_userbase, query_msg
 
@@ -213,7 +214,7 @@ async def not_joined(client: Bot, message: Message):
         pass
 
 
-@Bot.on_message(filters.command(["users", "stats"]) & filters.user(ADMINS))
+@Bot.on_message(filters.command(["users", "stats"]) & filters.create(is_admin))
 async def get_users(client: Bot, message: Message):
 
     msg = await client.send_message(
@@ -226,7 +227,7 @@ async def get_users(client: Bot, message: Message):
     await msg.edit(f"{len(users)} <b>Pengguna menggunakan bot ini</b>")
 
 
-@Bot.on_message(filters.command("broadcast") & filters.user(ADMINS))
+@Bot.on_message(filters.command("broadcast") & filters.create(is_admin))
 async def send_text(client: Bot, message: Message):
 
     if message.reply_to_message:
@@ -249,41 +250,40 @@ async def send_text(client: Bot, message: Message):
 
             chat_id = int(row[0])
 
-            if chat_id not in ADMINS:
+            try:
+                await broadcast_msg.copy(
+                    chat_id,
+                    protect_content=PROTECT_CONTENT
+                )
 
-                try:
-                    await broadcast_msg.copy(
-                        chat_id,
-                        protect_content=PROTECT_CONTENT
-                    )
+                successful += 1
 
-                    successful += 1
+            except FloodWait as e:
 
-                except FloodWait as e:
+                await asyncio.sleep(e.x)
 
-                    await asyncio.sleep(e.x)
+                await broadcast_msg.copy(
+                    chat_id,
+                    protect_content=PROTECT_CONTENT
+                )
 
-                    await broadcast_msg.copy(
-                        chat_id,
-                        protect_content=PROTECT_CONTENT
-                    )
+                successful += 1
 
-                    successful += 1
+            except UserIsBlocked:
+                await delete_user(chat_id)
+                blocked += 1
 
-                except UserIsBlocked:
-                    await delete_user(chat_id)
-                    blocked += 1
+            except InputUserDeactivated:
+                await delete_user(chat_id)
+                deleted += 1
 
-                except InputUserDeactivated:
-                    await delete_user(chat_id)
-                    deleted += 1
+            except BaseException:
+                unsuccessful += 1
 
-                except BaseException:
-                    unsuccessful += 1
-
-                total += 1
+            total += 1
 
         status = f"""<b><u>Berhasil Broadcast</u>
+
 Jumlah Pengguna: <code>{total}</code>
 Berhasil: <code>{successful}</code>
 Gagal: <code>{unsuccessful}</code>
