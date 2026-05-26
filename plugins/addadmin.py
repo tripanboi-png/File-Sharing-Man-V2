@@ -1,11 +1,10 @@
 from pyrogram import Client, filters
-from pyrogram.types import Message
 from config import ADMINS
+from database.mongo import add_admin
 
-admins = ADMINS.copy()
 
 @Client.on_message(filters.command("addadmin") & filters.user(ADMINS))
-async def add_admin(client, message: Message):
+async def add_admin_command(client, message):
 
     if len(message.command) < 2:
         return await message.reply_text(
@@ -14,10 +13,10 @@ async def add_admin(client, message: Message):
 
     user_id = int(message.command[1])
 
-    if user_id in admins:
-        return await message.reply_text("Admin sudah ada.")
+    if user_id not in ADMINS:
+        ADMINS.append(user_id)
 
-    admins.append(user_id)
+    await add_admin(user_id)
 
     await message.reply_text(
         f"✅ Admin berhasil ditambahkan\n\nID: <code>{user_id}</code>"
