@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-from config import ADMINS
+from plugins.check_admin import is_admin
 from database.mongo import get_admins
 
 
-@Client.on_message(filters.command("getadmin") & filters.user(ADMINS))
+@Client.on_message(filters.command("getadmin") & filters.create(is_admin))
 async def get_admin_list(client, message):
 
     admins = await get_admins()
