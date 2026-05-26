@@ -1,25 +1,15 @@
-import json
-
 from pyrogram import Client, filters
 from config import ADMINS
-
-ADMIN_FILE = "admins.json"
-
-
-def load_admins():
-    with open(ADMIN_FILE, "r") as f:
-        return json.load(f)
+from database.mongo import get_admins
 
 
 @Client.on_message(filters.command("getadmin") & filters.user(ADMINS))
-async def get_admin(client, message):
+async def get_admin_list(client, message):
 
-    admins = load_admins()
+    admins = await get_admins()
 
     if not admins:
-        return await message.reply_text(
-            "Belum ada admin tambahan."
-        )
+        return await message.reply_text("Tidak ada admin.")
 
     text = "📋 LIST ADMIN\n\n"
 
