@@ -1,6 +1,6 @@
 from pyrogram.types import InlineKeyboardButton
 from database.mongo import get_buttons
-
+from plugins.check_admin import is_admin
 
 async def start_button(client):
 
