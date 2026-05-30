@@ -13,9 +13,9 @@ async def add_admin_command(client, message):
 
     try:
         user_id = int(message.command[1])
-    except:
+    except ValueError:
         return await message.reply_text(
-            "User ID tidak valid"
+            "❌ User ID tidak valid"
         )
 
     await add_admin(user_id)
